@@ -28,7 +28,23 @@ const utils = {
 // Création d'un objet pour gérer l'affichage des 3 pages => pas de rechargement de page
 const page = {
     lobby: function() {
-        utils.pageContent("Paramétrage : <i id='reboot' class='fas fa-undo'></i>", "Exercices", "<button id='start'>Commencer<i class='far fa-play-circle'></i></button>");
+
+        // Création de la structure des cartes pour chaque exo
+        let mapArray = exerciseArray.map((exo) => 
+            `
+                <li>
+                    <div class='card-header'>
+                        <input type='number' id=${exo.pic} min='1' max='10' value=${exo.min}>
+                        <span>min</span>
+                    </div>
+                    <img src='img/${exo.pic}.png' />
+                    <i class='fas fa-arrow-alt-circle-left arrow' data-pic=${exo.pic}></i>
+                    <i class='fas fa-times-circle deleteBtn' data-pic=${exo.pic}></i>
+                </li>
+            `
+        ).join("");
+
+        utils.pageContent("Paramétrage : <i id='reboot' class='fas fa-undo'></i>", "<ul>" + mapArray + "</ul>", "<button id='start'>Commencer<i class='far fa-play-circle'></i></button>");
     },
 
     routine: function() {
@@ -41,5 +57,5 @@ const page = {
 }
 
 page.lobby()
-page.routine()
-page.finish()
+// page.routine()
+// page.finish()
