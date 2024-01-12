@@ -25,7 +25,7 @@ const utils = {
     },
 
     // Changement de minutes
-    handleEventMinutes: function () {
+    handleEventMinutes: function() {
         document.querySelectorAll('input[type="number"]').forEach((input) => {
             input.addEventListener('input', (e) => {
                 // Pour chaque input number, on map sur exerciseArray pour mettre à jour le nombre de minutes pour chaque exo
@@ -40,7 +40,7 @@ const utils = {
     },
 
     // Changement de place avec la flèche
-    handleEventArrow: function () {
+    handleEventArrow: function() {
         document.querySelectorAll('.arrow').forEach((arrow) => {
             arrow.addEventListener('click', (e) => {
                 let position = 0;
@@ -56,6 +56,34 @@ const utils = {
                         position++;
                     }
                 })
+            })
+        })
+    },
+
+    // Suppression d'un exercice
+    deleteItem: function() {
+        document.querySelectorAll('.deleteBtn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                // On crée un nouveau tableau afin de filtrer exerciseArray, et on return tous les exo qui ne correspondent pas au dataset du bouton cliqué pour les garder (donc ne pas les supprimer)
+                let newArray = exerciseArray.filter((exo) => {
+                    return exo.pic != e.target.dataset.pic;
+                });
+
+                // On attribue à exerciseArray sa nouvelle valeur
+                exerciseArray = newArray;
+                
+                /* Autre manière de faire avec un if :
+                let newArray = [];
+                exerciseArray.map((exo) => {
+                    if (exo.pic != e.target.dataset.pic) {
+                        newArray.push(exo);
+                    }
+                });
+                exerciseArray = newArray;
+                */
+                
+                // Et on relance l'affichage
+                page.lobby();
             })
         })
     }
@@ -84,6 +112,7 @@ const page = {
 
         utils.handleEventMinutes();
         utils.handleEventArrow();
+        utils.deleteItem();
     },
 
     routine: function() {
