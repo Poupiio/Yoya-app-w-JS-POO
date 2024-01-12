@@ -1,5 +1,5 @@
 const main = document.querySelector('main');
-let exerciseArray = [
+const basicArray = [
     { pic: 0, min: 1 },
     { pic: 1, min: 1 },
     { pic: 2, min: 1 },
@@ -9,8 +9,23 @@ let exerciseArray = [
     { pic: 6, min: 1 },
     { pic: 7, min: 1 },
     { pic: 8, min: 1 },
-    { pic: 9, min: 1 },
+    { pic: 9, min: 1 }
 ];
+
+let exerciseArray = [];
+
+// Lancement d'une fonction anonyme au lancement de la page
+(() => {
+    // S'il y a des exo dans le localStorage alors exerciseArray prend la valeur du LS
+    if (localStorage.exercises) {
+        exerciseArray = JSON.parse(localStorage.exercises);
+
+    // Sinon il prend la valeur de départ
+    } else {
+        exerciseArray = basicArray;
+    }
+})();
+
 
 class Exercise {
 
@@ -33,6 +48,7 @@ const utils = {
                     // Si la key pic de chaque exo (qui correspond à son id) = l'input cliqué alors on passe le nombre de minutes à exo.min en utilisant la méthode parseInt() pour avoir une variable de type number et non pas string
                     if (exo.pic == e.target.id) {
                         exo.min = parseInt(e.target.value);
+                        this.store();
                     }
                 })
             })
@@ -50,8 +66,9 @@ const utils = {
                         // On trouve la position de exo.pic et on la recule de 1
                         [exerciseArray[position], exerciseArray[position -1]] = [exerciseArray[position - 1], exerciseArray[position]];
                         
-                        // On relance la fonction page.lobby() qui map les éléments et donc les place correctement
+                        // On relance la fonction page.lobby() qui map les éléments et donc les place correctement + on sauvegarde
                         page.lobby();
+                        this.store();
                     } else {
                         position++;
                     }
@@ -82,10 +99,26 @@ const utils = {
                 exerciseArray = newArray;
                 */
                 
-                // Et on relance l'affichage
+                // Et on relance l'affichage + sauvegarde
                 page.lobby();
+
+                this.store();
             })
         })
+
+    },
+
+    // Reboot
+    reboot: function() {
+        // On remet le tableau à 0, on relance la page et on sauvegarde
+        exerciseArray = basicArray;
+        page.lobby();
+        this.store();
+    },
+
+    // Stockage dans le localStorage
+    store: function() {
+        localStorage.exercises = JSON.stringify(exerciseArray);
     }
 };
 
@@ -113,6 +146,7 @@ const page = {
         utils.handleEventMinutes();
         utils.handleEventArrow();
         utils.deleteItem();
+        reboot.addEventListener('click', () => utils.reboot());
     },
 
     routine: function() {
