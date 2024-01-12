@@ -22,6 +22,42 @@ const utils = {
         document.querySelector('h1').innerHTML = title;
         main.innerHTML = content;
         document.querySelector('.btn-container').innerHTML = btn;
+    },
+
+    // Changement de minutes
+    handleEventMinutes: function () {
+        document.querySelectorAll('input[type="number"]').forEach((input) => {
+            input.addEventListener('input', (e) => {
+                // Pour chaque input number, on map sur exerciseArray pour mettre à jour le nombre de minutes pour chaque exo
+                exerciseArray.map((exo) => {
+                    // Si la key pic de chaque exo (qui correspond à son id) = l'input cliqué alors on passe le nombre de minutes à exo.min en utilisant la méthode parseInt() pour avoir une variable de type number et non pas string
+                    if (exo.pic == e.target.id) {
+                        exo.min = parseInt(e.target.value);
+                    }
+                })
+            })
+        })
+    },
+
+    // Changement de place avec la flèche
+    handleEventArrow: function () {
+        document.querySelectorAll('.arrow').forEach((arrow) => {
+            arrow.addEventListener('click', (e) => {
+                let position = 0;
+                exerciseArray.map((exo) => {
+                    // Dès que exo.pic correspond au dataset cliqué, on intervertit la position des éléments dans le tableau exerciseArray. On ajoute une condition pour qu'il ne soit pas possible de déplacer la première image
+                    if (exo.pic == e.target.dataset.pic && position !== 0) {
+                        // On trouve la position de exo.pic et on la recule de 1
+                        [exerciseArray[position], exerciseArray[position -1]] = [exerciseArray[position - 1], exerciseArray[position]];
+                        
+                        // On relance la fonction page.lobby() qui map les éléments et donc les place correctement
+                        page.lobby();
+                    } else {
+                        position++;
+                    }
+                })
+            })
+        })
     }
 };
 
@@ -45,6 +81,9 @@ const page = {
         ).join("");
 
         utils.pageContent("Paramétrage : <i id='reboot' class='fas fa-undo'></i>", "<ul>" + mapArray + "</ul>", "<button id='start'>Commencer<i class='far fa-play-circle'></i></button>");
+
+        utils.handleEventMinutes();
+        utils.handleEventArrow();
     },
 
     routine: function() {
@@ -56,6 +95,4 @@ const page = {
     }
 }
 
-page.lobby()
-// page.routine()
-// page.finish()
+page.lobby();
