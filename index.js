@@ -28,8 +28,61 @@ let exerciseArray = [];
 
 
 class Exercise {
+    constructor() {
+        this.index = 0;
+        this.minutes = exerciseArray[this.index].min;
+        this.seconds = 0;
+    }
 
-}
+    updateCountdown = function() {
+        // Si le nombre de secondes restantes est entre 0 et 9, on ajoute un 0 pour afficher par exemple : 1:02 et pas 1:2
+        this.seconds = this.seconds < 10 ? "0" + this.seconds : this.seconds;
+
+        setTimeout(() => {
+            // Dans le cas où les minutes et les secondes arrivent à 0, on change d'exo (on incrémente l'index)
+            if (this.minutes === 0 && this.seconds === "00") {
+                this.index++;
+
+                // On sonne lorsqu'un exo est fini
+                this.ring();
+
+                // On ajoute une condition pour que les exercices continuent tant qu'il y en a dans exerciseArray
+                if (this.index < exerciseArray.length) {
+                    this.minutes = exerciseArray[this.index].min;
+                    this.seconds = 0;
+                    this.updateCountdown();
+
+                // Sinon on affiche la page de fin
+                } else {
+                    return page.finish();
+                }
+
+            // Si seules les secondes arrivent à 0, alors on perd une minute et les secondes passent à 59. On utilise la récursivité pour relancer la fonction (car on est dans un setTimeOut())
+            } else if (this.seconds === "00") {
+                this.minutes--;
+                this.seconds = 59;
+                this.updateCountdown();
+            } else {
+                this.seconds--;
+                this.updateCountdown();
+            }
+        }, 1000);
+
+        return (main.innerHTML = `
+            <div class="exercise-container">
+                <p>${this.minutes}:${this.seconds}</p>
+                <img src="img/${exerciseArray[this.index].pic}.png" />
+                <div>${this.index + 1}/${exerciseArray.length}</div>
+            </div>
+        `);
+    };
+
+    ring() {
+        const audio = new Audio();
+        audio.src = "ring.mp3";
+        audio.play();
+    }
+};
 
 // Création d'un objet avec une fonction contenant la logique d'affichage du body de chaque page (h1, main, button)
 const utils = {
@@ -147,10 +200,12 @@ const page = {
         utils.handleEventArrow();
         utils.deleteItem();
         reboot.addEventListener('click', () => utils.reboot());
+        start.addEventListener('click', () => this.routine());
     },
 
     routine: function() {
-        utils.pageContent("Routine", "Exercice avec chrono", null);
+        const exercise = new Exercise();
+        utils.pageContent("Routine", exercise.updateCountdown(), null);
     },
 
     finish: function() {
